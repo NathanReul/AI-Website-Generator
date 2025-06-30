@@ -27,7 +27,7 @@ app.use(async (req, res) => {
                         },
                     ],
                 });
-            res.send(response.generated_text);
+            res.send(chatCompletion.choices[0].message);
         } catch (error) {
             console.error('Error:', error);
             res.status(500).json({ error: 'Internal server error' });
