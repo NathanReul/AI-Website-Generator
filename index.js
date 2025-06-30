@@ -13,14 +13,17 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 
 app.use(async (req, res) => {
+    
         try {
-            const website = "https://fishmarket.com";
+            const website = "https://happyhorizon.com";
             const route = req.path;
-            const content = "Give me the content for a fictional HTML page. Reply with ONLY the HTML content in plain text, do not put it in a code block or include commentary. The fictional page you should generate is on https://fishmarket.com/ " + route + '. Include styling and navigation through <a> tags with a relative link in the href attribute.';
+            const content = "Give me the content for a fictional HTML page. Reply with ONLY the HTML content in plain text, do not put it in a code block or include commentary. The fictional page you should generate is on " + website + route + '. Include styling and navigation through <a> tags with a relative link, like <a href="/home">.';
             
+            console.log(content);
+
                 const response = await client.chatCompletion({
                     provider: "nebius",
-                    model: "google/gemma-2-2b-it",
+                    model: "microsoft/phi-4",
                     messages: [
                         {
                             role: "user",
