@@ -14,12 +14,13 @@ app.use(express.json());
 
 app.use(async (req, res) => {
         try {
+            const website = "https://fishmarket.com";
             const route = req.path;
-            const content = "Give me the content for a fictional HTML page. Reply with ONLY the HTML content in plain text, do not put it in a code block or include commentary. The fictional page you should generate is on https://localhost:3000/ " + route;
+            const content = "Give me the content for a fictional HTML page. Reply with ONLY the HTML content in plain text, do not put it in a code block or include commentary. The fictional page you should generate is on https://fishmarket.com/ " + route + '. Include styling and navigation through <a> tags with a relative link in the href attribute.';
             
                 const response = await client.chatCompletion({
                     provider: "nebius",
-                    model: "Qwen/Qwen3-32B",
+                    model: "google/gemma-2-2b-it",
                     messages: [
                         {
                             role: "user",
