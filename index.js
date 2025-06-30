@@ -1,11 +1,11 @@
-    const express = require("express");
-
-const { InferenceClient  } = require("@huggingface/inference");
-const client = new InferenceClient(process.env.HF_TOKEN);
-
+const express = require("express");
 const dotenv = require("dotenv");
 
 dotenv.config();
+    
+const { InferenceClient  } = require("@huggingface/inference");
+const client = new InferenceClient(process.env.HF_TOKEN);
+
 
 const app = express();
 const port = process.env.PORT || 3000;
