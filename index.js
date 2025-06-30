@@ -1,7 +1,7 @@
     const express = require("express");
 
 const { InferenceClient  } = require("@huggingface/inference");
-const client = new InferenceClient(({}).HF_TOKEN);
+const client = new InferenceClient(process.env.HF_TOKEN);
 
 const dotenv = require("dotenv");
 
@@ -27,7 +27,7 @@ app.use(async (req, res) => {
                         },
                     ],
                 });
-            res.send(chatCompletion.choices[0].message);
+            res.send(response.choices[0].message.content);
         } catch (error) {
             console.error('Error:', error);
             res.status(500).json({ error: 'Internal server error' });
