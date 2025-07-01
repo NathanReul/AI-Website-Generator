@@ -123,7 +123,6 @@ app.use(async (req, res) => {
                 headers: {
                     'Authorization': `Bearer ${process.env.OPENROUTER_TOKEN}`,
                     'Content-Type': 'application/json',
-                    'HTTP-Referer': 'http://localhost:3000',
                     'X-Title': 'AI Website Generator'
                 }
             });
