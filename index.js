@@ -6,9 +6,6 @@ const axios = require("axios");
 const session = require("express-session");
 
 dotenv.config();
-    
-const { InferenceClient  } = require("@huggingface/inference");
-const client = new InferenceClient(process.env.HF_TOKEN);
 
 
 const app = express();
@@ -40,8 +37,19 @@ app.get('/the-page-where-it-starts', (req, res) => {
 app.get('/reset', (req, res) => {
     res.send('Resetting...');
 
-    axios.get('https://huggingface.co/api/models?inference_provider=nebius&pipeline_tag=text-generation').then(result => {
-        models = result.data;
+    axios.get('https://openrouter.ai/api/v1/models', {
+        headers: {
+            'Authorization': `Bearer ${process.env.OPENROUTER_TOKEN}`,
+            'Content-Type': 'application/json'
+        }
+    }).then(result => {
+        models = result.data.data.map(model => ({
+            id: model.id,
+            name: model.name,
+            description: model.description,
+            context_length: model.context_length,
+            pricing: model.pricing
+        }));
         fs.writeFileSync('./templates/models.json', JSON.stringify(models, null, 2));
     });
 });
@@ -78,21 +86,29 @@ app.use(async (req, res) => {
             const url = website + route;
             const content = customPrompt ? customPrompt.replace(/{url}/g, url) : "Give me the content for a fictional HTML page. Reply with ONLY the HTML content in plain text, do not put it in a code block or include commentary. The fictional page you should generate is on " + url + '. Include styling and navigation through <a> tags with a relative link, like <a href="/home">. Include a lot of <a> tags. Be creative and make it look like a real page, dont be afraid to return a lot of code. Feel free to use images, but use public cdns as the image URLs. Be realistic with the links, examples: a blog post: /blog/{post-title}. A user profile: /user/{id or username}. A settings page: /settings/{sub-settings}, etc.';
 
-            const response = await client.chatCompletion({
-                provider: "nebius",
+            const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
                 model: model,
                 messages: [
                     {
                         role: "user",
                         content: content
-                    },
+                    }
                 ],
+                max_tokens: 4000,
+                temperature: 0.7
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${process.env.OPENROUTER_TOKEN}`,
+                    'Content-Type': 'application/json',
+                    'HTTP-Referer': 'http://localhost:3000',
+                    'X-Title': 'AI Website Generator'
+                }
             }).catch(error => {
                 console.error('Error:', error);
                 res.status(500).json({ error: 'Internal server error' });
             });
 
-            var responseContent = response.choices[0].message.content;
+            var responseContent = response.data.choices[0].message.content;
 
             if (responseContent.startsWith('```html')) {
                 responseContent = responseContent.replace('```html', '').replace('```', '');
