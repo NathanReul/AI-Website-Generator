@@ -23,7 +23,7 @@ app.use(session({
     cookie: { secure: false }
 }));
 
-app.get('/', (req, res) => {
+app.get('/the-page-where-it-starts', (req, res) => {
     const templatePath = path.join(__dirname, 'templates', 'index.html');
     fs.readFile(templatePath, 'utf8', (err, data) => {
         const models = JSON.parse(fs.readFileSync('./templates/models.json', 'utf8'));
@@ -50,12 +50,18 @@ app.get('/start', (req, res) => {
     req.session.website = req.query.website;
     req.session.model = req.query.model;
 
-    res.redirect(req.path);
+    res.redirect('/');
 });
 
 app.use(async (req, res) => {
     
         try {
+
+
+            if (!req.session.website || !req.session.model) {
+                return res.redirect('/the-page-where-it-starts');
+            }
+
             var model = req.session.model || 'microsoft/phi-4';
             const website = req.session.website;
             const route = req.path;
@@ -73,6 +79,10 @@ app.use(async (req, res) => {
             }
 
             if (route === '/start') {
+                return;
+            }
+
+            if (route === '/the-page-where-it-starts') {
                 return;
             }
 
