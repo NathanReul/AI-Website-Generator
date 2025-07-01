@@ -98,6 +98,9 @@ app.use(async (req, res) => {
                 responseContent = responseContent.replace('```html', '').replace('```', '');
             }
 
+            // Remove DeepSeek thinking tags
+            responseContent = responseContent.replace(/<think>.*?<\/think>/gs, '');
+
             res.send(responseContent);
         } catch (error) {
             console.error('Error:', error);
