@@ -104,7 +104,7 @@ app.use(async (req, res) => {
             res.send(responseContent);
         } catch (error) {
             console.error('Error:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            res.send('Sorry, something went wrong. Click <a href="/the-page-where-it-starts">here</a> to try again.');
         }
     });
 
