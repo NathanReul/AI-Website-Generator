@@ -76,8 +76,18 @@
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('browse-button').addEventListener('click', () => {
                 const website = document.getElementById('website-input').value;
-                window.location.href = `/${website}`;
+                const model = document.getElementById('model-select').value;
+                window.location.href = `/start?website=${website}&model=${model}`;
             });
+
+            const models = {models};
+            models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model.id;
+                option.textContent = model.id;
+                document.getElementById('model-select').appendChild(option);
+            });
+
         });
     </script>
 </head>
@@ -88,6 +98,9 @@
 
         <h2>What website would you like to browse?</h2>
         <input type="text" id="website-input" placeholder="Enter website URL">
+        <select id="model-select">
+            <option value="default">Select a model</option>
+        </select>
         <button id="browse-button">Browse</button>
     </div>
 </body>
