@@ -65,9 +65,14 @@ app.use(async (req, res) => {
 
             console.log(website, model, route);
 
-            const customRoutes = ['/favicon.ico', '/', '/reset', '/start', '/the-page-where-it-starts'];
+            const customRoutes = ['/favicon.ico', '/reset', '/start', '/the-page-where-it-starts'];
             if (customRoutes.includes(route)) {
-                return;
+                return res.send('x');
+            }
+
+            const customStartsWithRoutes = ['/.well-known/'];
+            if (customStartsWithRoutes.some(route => route.startsWith(route))) {
+                return res.send('x');
             }
 
             const content = "Give me the content for a fictional HTML page. Reply with ONLY the HTML content in plain text, do not put it in a code block or include commentary. The fictional page you should generate is on " + website + route + '. Include styling and navigation through <a> tags with a relative link, like <a href="/home">. Be creative and make it look like a real page, dont be afraid to return a lot of code. Feel free to use images, but use public cdns as the image URLs. Be realistic with the links, examples: a blog post: /blog/{post-title}. A user profile: /user/{id or username}. A settings page: /settings/{sub-settings}, etc.';
