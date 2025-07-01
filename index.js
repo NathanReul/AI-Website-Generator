@@ -54,35 +54,19 @@ app.get('/start', (req, res) => {
 });
 
 app.use(async (req, res) => {
-    
         try {
-
-
             if (!req.session.website || !req.session.model) {
                 return res.redirect('/the-page-where-it-starts');
             }
 
-            var model = req.session.model || 'microsoft/phi-4';
+            const model = req.session.model;
             const website = req.session.website;
             const route = req.path;
 
-            if (route === '/favicon.ico') {
-                return res.send('x');
-            }
+            console.log(website, model, route);
 
-            if (route === '/') {
-                return;
-            }
-
-            if (route === '/reset') {
-                return;
-            }
-
-            if (route === '/start') {
-                return;
-            }
-
-            if (route === '/the-page-where-it-starts') {
+            const customRoutes = ['/favicon.ico', '/', '/reset', '/start', '/the-page-where-it-starts'];
+            if (customRoutes.includes(route)) {
                 return;
             }
 
@@ -97,6 +81,9 @@ app.use(async (req, res) => {
                         content: content
                     },
                 ],
+            }).catch(error => {
+                console.error('Error:', error);
+                res.status(500).json({ error: 'Internal server error' });
             });
 
             var responseContent = response.choices[0].message.content;
