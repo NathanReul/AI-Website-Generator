@@ -116,7 +116,7 @@ app.use(async (req, res) => {
                         content: content
                     }
                 ],
-                max_tokens: 4000,
+                max_tokens: 20000,
                 temperature: 0.7,
                 stream: false
             }, {
