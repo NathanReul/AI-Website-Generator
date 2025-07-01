@@ -50,9 +50,9 @@ app.get('/reset', (req, res) => {
             context_length: model.context_length,
             pricing: model.pricing
         })).sort((a, b) => {
-            if (a.id.includes(':free')) return -1;
-            if (b.id.includes(':free')) return 1;
-            return 0;
+            if (a.id.includes(':free') && !b.id.includes(':free')) return -1;
+            if (!a.id.includes(':free') && b.id.includes(':free')) return 1;
+            return a.id.localeCompare(b.id);
         });
         fs.writeFileSync('./templates/models.json', JSON.stringify(models, null, 2));
         console.log(`Updated models.json with ${models.length} models`);
