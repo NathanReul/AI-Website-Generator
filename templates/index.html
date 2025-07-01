@@ -21,7 +21,7 @@
             padding: 40px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             text-align: center;
-            max-width: 600px;
+            max-width: 800px;
             margin: 20px;
         }
         h1 {
@@ -29,11 +29,44 @@
             margin-bottom: 20px;
             font-size: 2.5em;
         }
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
         p {
             color: #666;
             line-height: 1.6;
             margin-bottom: 30px;
             font-size: 1.1em;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
         }
         .btn {
             display: inline-block;
@@ -41,12 +74,81 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             text-decoration: none;
+            border: none;
             border-radius: 25px;
             margin: 10px;
             transition: transform 0.3s ease;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
         }
         .btn:hover {
             transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+        .advanced-toggle {
+            background: none;
+            border: none;
+            color: #667eea;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .advanced-settings {
+            display: none;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid #e9ecef;
+        }
+        .advanced-settings.show {
+            display: block;
+        }
+        .prompt-option {
+            margin-bottom: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            transition: border-color 0.3s ease;
+        }
+        .prompt-option:hover {
+            border-color: #667eea;
+        }
+        .prompt-option.selected {
+            border-color: #667eea;
+            background-color: #f8f9ff;
+        }
+        .prompt-option input[type="radio"] {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .prompt-option label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .prompt-description {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .prompt-content {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #495057;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 150px;
+            overflow-y: auto;
         }
         .features {
             display: flex;
@@ -71,15 +173,16 @@
             font-size: 0.9em;
             margin: 0;
         }
+        .main-form {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('browse-button').addEventListener('click', () => {
-                const website = document.getElementById('website-input').value;
-                const model = document.getElementById('model-select').value;
-                window.location.href = `/start?website=${website}&model=${model}`;
-            });
-
             const models = {models};
             models.forEach(model => {
                 const option = document.createElement('option');
@@ -88,6 +191,63 @@
                 document.getElementById('model-select').appendChild(option);
             });
 
+            // Advanced settings toggle
+            document.getElementById('advanced-toggle').addEventListener('click', () => {
+                const advancedSettings = document.getElementById('advanced-settings');
+                advancedSettings.classList.toggle('show');
+            });
+
+            // Prompt selection handling
+            const promptRadios = document.querySelectorAll('input[name="prompt-type"]');
+            const customPromptTextarea = document.getElementById('custom-prompt');
+
+            promptRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    // Remove selected class from all prompt options
+                    document.querySelectorAll('.prompt-option').forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to the chosen option
+                    const selectedOption = radio.closest('.prompt-option');
+                    if (selectedOption) {
+                        selectedOption.classList.add('selected');
+                    }
+                    
+                    if (radio.value === 'custom') {
+                        customPromptTextarea.disabled = false;
+                        customPromptTextarea.focus();
+                    } else {
+                        customPromptTextarea.disabled = true;
+                    }
+                });
+            });
+
+            // Browse button
+            document.getElementById('browse-button').addEventListener('click', () => {
+                const website = document.getElementById('website-input').value;
+                const model = document.getElementById('model-select').value;
+                const selectedPrompt = document.querySelector('input[name="prompt-type"]:checked').value;
+                let prompt = '';
+
+                if (selectedPrompt === 'detailed') {
+                    prompt = 'Give me the content for a fictional HTML page. Reply with ONLY the HTML content in plain text, do not put it in a code block or include commentary. The fictional page you should generate is on {url}. Include styling and navigation through <a> tags with a relative link, like <a href="/home">. Include a lot of <a> tags. Be creative and make it look like a real page, dont be afraid to return a lot of code. Feel free to use images, but use public cdns as the image URLs. Be realistic with the links, examples: a blog post: /blog/{post-title}. A user profile: /user/{id or username}. A settings page: /settings/{sub-settings}, etc.';
+                } else if (selectedPrompt === 'simple') {
+                    prompt = 'Create a simple and clean HTML page for {url}. Reply with ONLY the HTML content in plain text, no code blocks or commentary. Include basic CSS styling within <style> tags and essential navigation links using <a> tags with relative paths like <a href="/about">. Keep the design clean and professional. Include a few relevant links that make sense for the page context. Use simple, readable fonts and a clean color scheme.';
+                } else if (selectedPrompt === 'minimal') {
+                    prompt = 'Generate a minimal HTML page for {url}. Reply with ONLY the HTML content in plain text, no code blocks or commentary. Focus on clean, minimal design with essential content only. Include basic styling with a minimalist approach - simple colors, clean typography, and minimal navigation links. Use <a> tags with relative paths for navigation. Keep the layout simple and uncluttered. Avoid excessive images or complex styling.';
+                } else if (selectedPrompt === 'custom') {
+                    prompt = customPromptTextarea.value;
+                }
+
+                const params = new URLSearchParams({
+                    website: website,
+                    model: model,
+                    prompt: prompt
+                });
+                
+                window.location.href = `/start?${params.toString()}`;
+            });
         });
     </script>
 </head>
@@ -96,12 +256,80 @@
         <h1>Welcome to AI Website</h1>
         <p>This is a dynamic AI-powered website that generates content on-the-fly. Explore different routes to see AI-generated pages!</p>
 
-        <h2>What website would you like to browse?</h2>
-        <input type="text" id="website-input" placeholder="example.com">
-        <select id="model-select">
-            <option value="default">Select a model</option>
-        </select>
-        <button id="browse-button">Browse</button>
+        <div class="main-form">
+            <h2>Configure Your AI Website</h2>
+            
+            <div class="form-group">
+                <label for="website-input">What website would you like to browse?</label>
+                <input type="text" id="website-input" placeholder="example.com" value="techstartup.com">
+            </div>
+
+            <div class="form-group">
+                <label for="model-select">Select AI Model</label>
+                <select id="model-select">
+                    <option value="default">Select a model</option>
+                </select>
+            </div>
+
+            <button type="button" id="advanced-toggle" class="advanced-toggle">
+                ⚙️ Advanced Settings
+            </button>
+
+            <div id="advanced-settings" class="advanced-settings">
+                <h3>Prompt Configuration</h3>
+                <p>Choose how the AI should generate your website content:</p>
+                
+                <div class="prompt-option selected">
+                    <input type="radio" id="detailed" name="prompt-type" value="detailed" checked>
+                    <label for="detailed">Detailed & Rich</label>
+                    <div class="prompt-description">Creates comprehensive pages with lots of content, styling, and navigation links</div>
+                    <div class="prompt-content">Give me the content for a fictional HTML page. Reply with ONLY the HTML content in plain text, do not put it in a code block or include commentary. The fictional page you should generate is on {url}. Include styling and navigation through &lt;a&gt; tags with a relative link, like &lt;a href="/home"&gt;. Include a lot of &lt;a&gt; tags. Be creative and make it look like a real page, dont be afraid to return a lot of code. Feel free to use images, but use public cdns as the image URLs. Be realistic with the links, examples: a blog post: /blog/{post-title}. A user profile: /user/{id or username}. A settings page: /settings/{sub-settings}, etc.</div>
+                </div>
+                
+                <div class="prompt-option">
+                    <input type="radio" id="simple" name="prompt-type" value="simple">
+                    <label for="simple">Simple & Clean</label>
+                    <div class="prompt-description">Generates straightforward pages with basic styling and essential navigation</div>
+                    <div class="prompt-content">Create a simple and clean HTML page for {url}. Reply with ONLY the HTML content in plain text, no code blocks or commentary. Include basic CSS styling within &lt;style&gt; tags and essential navigation links using &lt;a&gt; tags with relative paths like &lt;a href="/about"&gt;. Keep the design clean and professional. Include a few relevant links that make sense for the page context. Use simple, readable fonts and a clean color scheme.</div>
+                </div>
+                
+                <div class="prompt-option">
+                    <input type="radio" id="minimal" name="prompt-type" value="minimal">
+                    <label for="minimal">Minimal</label>
+                    <div class="prompt-description">Creates clean, minimal pages focused on essential content</div>
+                    <div class="prompt-content">Generate a minimal HTML page for {url}. Reply with ONLY the HTML content in plain text, no code blocks or commentary. Focus on clean, minimal design with essential content only. Include basic styling with a minimalist approach - simple colors, clean typography, and minimal navigation links. Use &lt;a&gt; tags with relative paths for navigation. Keep the layout simple and uncluttered. Avoid excessive images or complex styling.</div>
+                </div>
+                
+                <div class="prompt-option">
+                    <input type="radio" id="custom" name="prompt-type" value="custom">
+                    <label for="custom">Custom Prompt</label>
+                    <div class="prompt-description">Use your own custom prompt</div>
+                    <div class="prompt-content">Write your own custom prompt below...</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="custom-prompt">Custom Prompt (use {url} as placeholder for the current URL)</label>
+                    <textarea id="custom-prompt" placeholder="Enter your custom prompt here... Use {url} to reference the current page URL" disabled></textarea>
+                </div>
+            </div>
+
+            <button id="browse-button" class="btn">🚀 Start Browsing</button>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <h3>🎯 Dynamic Content</h3>
+                <p>Every page is generated on-the-fly using AI, creating unique experiences for each route.</p>
+            </div>
+            <div class="feature">
+                <h3>🔗 Smart Navigation</h3>
+                <p>AI-generated links create realistic navigation patterns that feel like real websites.</p>
+            </div>
+            <div class="feature">
+                <h3>⚡ Real-time</h3>
+                <p>No pre-built pages - everything is generated instantly as you explore different URLs.</p>
+            </div>
+        </div>
     </div>
 </body>
 </html> 
