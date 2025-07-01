@@ -1,6 +1,7 @@
 # AI Website Generator
 
 A Node.js application that generates fictional website content using AI models through the OpenRouter API.
+Requires an OpenRouter API key. Some models can be used free of charge.
 
 ## Features
 
