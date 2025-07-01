@@ -203,6 +203,56 @@
         .reset-button:active {
             transform: translateY(0);
         }
+        .model-recommendations {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+        .model-recommendations h4 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 1.1em;
+        }
+        .recommendation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .recommendation-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .recommendation-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+        .recommendation-item strong {
+            display: block;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 0.95em;
+        }
+        .model-tag {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 8px;
+        }
+        .recommendation-item p {
+            margin: 0;
+            color: #666;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
     </style>
     <button id="reset-models" class="reset-button" title="Update available models">🔄 Update Models</button>
     <script>
@@ -255,11 +305,11 @@
                 let prompt = '';
 
                 if (selectedPrompt === 'detailed') {
-                    prompt = 'Create a comprehensive, feature-rich HTML page for the fictional website at {url}. Respond with ONLY the complete HTML content in plain text - no code blocks, markdown, or commentary. The page should be a realistic, professional website that could actually exist. Include: 1) Complete HTML5 structure with proper meta tags, 2) Comprehensive CSS styling within <style> tags using modern design principles, 3) Rich, engaging content relevant to the URL context, 4) Multiple navigation links using relative paths (<a href="/path">) that create a realistic site structure, 5) Professional images from public CDNs (Unsplash, Pexels, etc.), 6) Interactive elements like forms, buttons, or hover effects, 7) Responsive design considerations, 8) SEO-friendly structure with proper headings and semantic HTML. Be creative and detailed - this should look like a real, professional website. Include realistic internal links that follow common web patterns: /about, /contact, /services, /blog, /products, /login, /register, etc.';
+                    prompt = 'Create a stunning, production-ready HTML page for the fictional website at {url}. Respond with ONLY the complete HTML content in plain text - no code blocks, markdown, or commentary. The page must look absolutely beautiful and professional out-of-the-box with zero additional styling needed. Include: 1) Complete HTML5 structure with proper meta tags and viewport settings, 2) Comprehensive, modern CSS styling within <style> tags that creates an immediately impressive visual design, 3) Rich, engaging content relevant to the URL context with proper typography hierarchy, 4) Multiple navigation links using relative paths (<a href="/path">) that create a realistic site structure, 5) High-quality, professional images from public CDNs (Unsplash, Pexels, etc.) that enhance the visual appeal, 6) Interactive elements like hover effects, smooth transitions, and modern UI components, 7) Fully responsive design that looks great on all devices, 8) SEO-friendly structure with proper headings and semantic HTML, 9) Modern color schemes, gradients, and visual effects that create immediate visual impact, 10) Professional spacing, typography, and layout that requires no adjustments. The result should be a visually stunning, modern website that looks like it was professionally designed. Include realistic internal links following common web patterns: /about, /contact, /services, /blog, /products, /login, /register, etc.';
                 } else if (selectedPrompt === 'simple') {
-                    prompt = 'Generate a clean, professional HTML page for {url}. Respond with ONLY the HTML content in plain text - no code blocks or commentary. Create a well-structured page with: 1) Proper HTML5 document structure, 2) Clean, modern CSS styling within <style> tags, 3) Relevant, engaging content that matches the URL context, 4) Essential navigation links using relative paths (<a href="/path">), 5) Professional color scheme and typography, 6) Simple but effective layout, 7) A few high-quality images from public CDNs if appropriate. Focus on readability and user experience. Include logical internal links like /about, /contact, /services, /blog that make sense for the website type. Keep the design clean and professional while being informative and engaging.';
+                    prompt = 'Generate a beautiful, clean HTML page for {url} that looks professional and polished out-of-the-box. Respond with ONLY the HTML content in plain text - no code blocks or commentary. Create a visually appealing page with: 1) Proper HTML5 document structure with complete meta tags, 2) Clean, modern CSS styling within <style> tags that creates immediate visual appeal, 3) Relevant, engaging content that matches the URL context with excellent typography, 4) Essential navigation links using relative paths (<a href="/path">) with hover effects, 5) Professional color scheme with subtle gradients and modern design elements, 6) Simple but visually striking layout with proper spacing and alignment, 7) High-quality images from public CDNs that complement the design, 8) Smooth transitions and subtle animations for enhanced user experience, 9) Responsive design that maintains visual quality across devices, 10) Clean, readable fonts with proper contrast and hierarchy. The page should look like a professionally designed website that requires no additional styling. Include logical internal links like /about, /contact, /services, /blog that make sense for the website type.';
                 } else if (selectedPrompt === 'minimal') {
-                    prompt = 'Create a minimal, clean HTML page for {url}. Respond with ONLY the HTML content in plain text - no code blocks or commentary. Design a page that emphasizes: 1) Clean, uncluttered layout with plenty of white space, 2) Simple, readable typography and minimal color palette, 3) Essential content only - no unnecessary elements, 4) Basic but elegant CSS styling within <style> tags, 5) Minimal navigation with only the most important links using relative paths (<a href="/path">), 6) Focus on content over decoration, 7) Fast-loading design with minimal images (only if absolutely necessary). Use a minimalist approach with simple colors (whites, grays, maybe one accent color), clean fonts, and a straightforward layout. Include only essential internal links like /about, /contact. The goal is maximum readability and clarity with minimal visual distraction.';
+                    prompt = 'Create a visually stunning minimal HTML page for {url} that looks elegant and refined out-of-the-box. Respond with ONLY the HTML content in plain text - no code blocks or commentary. Design a page that emphasizes: 1) Clean, sophisticated layout with perfect white space and visual balance, 2) Beautiful typography with carefully chosen fonts and optimal readability, 3) Essential content only presented with maximum visual impact, 4) Elegant CSS styling within <style> tags that creates immediate visual appeal, 5) Minimal navigation with only the most important links using relative paths (<a href="/path">) with subtle hover effects, 6) Focus on content presentation with sophisticated visual hierarchy, 7) Fast-loading design with minimal but high-impact images (only if they enhance the design), 8) Modern minimalist color palette with subtle accents and professional contrast, 9) Smooth, refined animations and transitions, 10) Responsive design that maintains elegance across all devices. Use a sophisticated minimalist approach with carefully chosen colors, premium fonts, and impeccable spacing. Include only essential internal links like /about, /contact. The goal is maximum visual impact with minimal elements - every detail should be intentional and beautiful.';
                 } else if (selectedPrompt === 'custom') {
                     prompt = customPromptTextarea.value;
                 }
@@ -324,6 +374,21 @@
                 <select id="model-select">
                     <option value="default">Select a model</option>
                 </select>
+                <div class="model-recommendations">
+                    <h4>💡 Recommended Models</h4>
+                    <div class="recommendation-grid">
+                        <div class="recommendation-item">
+                            <strong>Deepseek V3</strong>
+                            <span class="model-tag">deepseek-ai/DeepSeek-V3</span>
+                            <p>Excellent for detailed, creative content with rich HTML generation</p>
+                        </div>
+                        <div class="recommendation-item">
+                            <strong>Nemotron</strong>
+                            <span class="model-tag">nvidia/Llama-3_3-Nemotron-Super-49B-v1</span>
+                            <p>Great for balanced content with good structure and navigation</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <button type="button" id="advanced-toggle" class="advanced-toggle">
@@ -337,22 +402,22 @@
                 <div class="prompt-option selected">
                     <input type="radio" id="detailed" name="prompt-type" value="detailed" checked>
                     <label for="detailed">Detailed & Rich</label>
-                    <div class="prompt-description">Creates comprehensive, feature-rich pages with modern design, interactive elements, and extensive navigation</div>
-                    <div class="prompt-content">Create a comprehensive, feature-rich HTML page for the fictional website at {url}. Respond with ONLY the complete HTML content in plain text - no code blocks, markdown, or commentary. The page should be a realistic, professional website that could actually exist. Include: 1) Complete HTML5 structure with proper meta tags, 2) Comprehensive CSS styling within &lt;style&gt; tags using modern design principles, 3) Rich, engaging content relevant to the URL context, 4) Multiple navigation links using relative paths (&lt;a href="/path"&gt;) that create a realistic site structure, 5) Professional images from public CDNs (Unsplash, Pexels, etc.), 6) Interactive elements like forms, buttons, or hover effects, 7) Responsive design considerations, 8) SEO-friendly structure with proper headings and semantic HTML. Be creative and detailed - this should look like a real, professional website. Include realistic internal links that follow common web patterns: /about, /contact, /services, /blog, /products, /login, /register, etc.</div>
+                    <div class="prompt-description">Creates stunning, production-ready pages with immediate visual impact and professional design</div>
+                    <div class="prompt-content">Create a stunning, production-ready HTML page for the fictional website at {url}. Respond with ONLY the complete HTML content in plain text - no code blocks, markdown, or commentary. The page must look absolutely beautiful and professional out-of-the-box with zero additional styling needed. Include: 1) Complete HTML5 structure with proper meta tags and viewport settings, 2) Comprehensive, modern CSS styling within &lt;style&gt; tags that creates an immediately impressive visual design, 3) Rich, engaging content relevant to the URL context with proper typography hierarchy, 4) Multiple navigation links using relative paths (&lt;a href="/path"&gt;) that create a realistic site structure, 5) High-quality, professional images from public CDNs (Unsplash, Pexels, etc.) that enhance the visual appeal, 6) Interactive elements like hover effects, smooth transitions, and modern UI components, 7) Fully responsive design that looks great on all devices, 8) SEO-friendly structure with proper headings and semantic HTML, 9) Modern color schemes, gradients, and visual effects that create immediate visual impact, 10) Professional spacing, typography, and layout that requires no adjustments. The result should be a visually stunning, modern website that looks like it was professionally designed. Include realistic internal links following common web patterns: /about, /contact, /services, /blog, /products, /login, /register, etc.</div>
                 </div>
                 
                 <div class="prompt-option">
                     <input type="radio" id="simple" name="prompt-type" value="simple">
                     <label for="simple">Simple & Clean</label>
-                    <div class="prompt-description">Generates well-structured pages with clean design, professional styling, and essential navigation</div>
-                    <div class="prompt-content">Generate a clean, professional HTML page for {url}. Respond with ONLY the HTML content in plain text - no code blocks or commentary. Create a well-structured page with: 1) Proper HTML5 document structure, 2) Clean, modern CSS styling within &lt;style&gt; tags, 3) Relevant, engaging content that matches the URL context, 4) Essential navigation links using relative paths (&lt;a href="/path"&gt;), 5) Professional color scheme and typography, 6) Simple but effective layout, 7) A few high-quality images from public CDNs if appropriate. Focus on readability and user experience. Include logical internal links like /about, /contact, /services, /blog that make sense for the website type. Keep the design clean and professional while being informative and engaging.</div>
+                    <div class="prompt-description">Generates beautiful, polished pages with immediate visual appeal and professional styling</div>
+                    <div class="prompt-content">Generate a beautiful, clean HTML page for {url} that looks professional and polished out-of-the-box. Respond with ONLY the HTML content in plain text - no code blocks or commentary. Create a visually appealing page with: 1) Proper HTML5 document structure with complete meta tags, 2) Clean, modern CSS styling within &lt;style&gt; tags that creates immediate visual appeal, 3) Relevant, engaging content that matches the URL context with excellent typography, 4) Essential navigation links using relative paths (&lt;a href="/path"&gt;) with hover effects, 5) Professional color scheme with subtle gradients and modern design elements, 6) Simple but visually striking layout with proper spacing and alignment, 7) High-quality images from public CDNs that complement the design, 8) Smooth transitions and subtle animations for enhanced user experience, 9) Responsive design that maintains visual quality across devices, 10) Clean, readable fonts with proper contrast and hierarchy. The page should look like a professionally designed website that requires no additional styling. Include logical internal links like /about, /contact, /services, /blog that make sense for the website type.</div>
                 </div>
                 
                 <div class="prompt-option">
                     <input type="radio" id="minimal" name="prompt-type" value="minimal">
                     <label for="minimal">Minimal</label>
-                    <div class="prompt-description">Creates clean, minimal pages focused on content with maximum readability and clarity</div>
-                    <div class="prompt-content">Create a minimal, clean HTML page for {url}. Respond with ONLY the HTML content in plain text - no code blocks or commentary. Design a page that emphasizes: 1) Clean, uncluttered layout with plenty of white space, 2) Simple, readable typography and minimal color palette, 3) Essential content only - no unnecessary elements, 4) Basic but elegant CSS styling within &lt;style&gt; tags, 5) Minimal navigation with only the most important links using relative paths (&lt;a href="/path"&gt;), 6) Focus on content over decoration, 7) Fast-loading design with minimal images (only if absolutely necessary). Use a minimalist approach with simple colors (whites, grays, maybe one accent color), clean fonts, and a straightforward layout. Include only essential internal links like /about, /contact. The goal is maximum readability and clarity with minimal visual distraction.</div>
+                    <div class="prompt-description">Creates visually stunning minimal pages with elegant design and maximum visual impact</div>
+                    <div class="prompt-content">Create a visually stunning minimal HTML page for {url} that looks elegant and refined out-of-the-box. Respond with ONLY the HTML content in plain text - no code blocks or commentary. Design a page that emphasizes: 1) Clean, sophisticated layout with perfect white space and visual balance, 2) Beautiful typography with carefully chosen fonts and optimal readability, 3) Essential content only presented with maximum visual impact, 4) Elegant CSS styling within &lt;style&gt; tags that creates immediate visual appeal, 5) Minimal navigation with only the most important links using relative paths (&lt;a href="/path"&gt;) with subtle hover effects, 6) Focus on content presentation with sophisticated visual hierarchy, 7) Fast-loading design with minimal but high-impact images (only if they enhance the design), 8) Modern minimalist color palette with subtle accents and professional contrast, 9) Smooth, refined animations and transitions, 10) Responsive design that maintains elegance across all devices. Use a sophisticated minimalist approach with carefully chosen colors, premium fonts, and impeccable spacing. Include only essential internal links like /about, /contact. The goal is maximum visual impact with minimal elements - every detail should be intentional and beautiful.</div>
                 </div>
                 
                 <div class="prompt-option">
