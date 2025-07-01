@@ -1,7 +1,7 @@
 {
   "name": "ai-website",
   "version": "1.0.0",
-  "description": "",
+  "description": "A website generator using AI, integrated with OpenRouter.",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
