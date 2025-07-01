@@ -94,10 +94,41 @@ app.use(async (req, res) => {
 
             var responseContent = response.choices[0].message.content;
 
-            if (responseContent.startsWith('```html')) {
-                responseContent = responseContent.replace('```html', '').replace('```', '');
+            // Function to extract only HTML content and remove explanations
+            function extractHTMLContent(content) {
+                // Remove markdown code blocks
+                if (content.includes('```html')) {
+                    const htmlMatch = content.match(/```html\s*([\s\S]*?)\s*```/);
+                    if (htmlMatch) {
+                        return htmlMatch[1].trim();
+                    }
+                }
+                
+                // Remove regular code blocks
+                if (content.includes('```')) {
+                    const codeMatch = content.match(/```\s*([\s\S]*?)\s*```/);
+                    if (codeMatch) {
+                        return codeMatch[1].trim();
+                    }
+                }
+                
+                // Find the first occurrence of <!DOCTYPE html> or <html
+                const htmlStart = content.search(/<!DOCTYPE html>|<html/i);
+                if (htmlStart !== -1) {
+                    // Find the last occurrence of </html>
+                    const htmlEnd = content.lastIndexOf('</html>');
+                    if (htmlEnd !== -1) {
+                        return content.substring(htmlStart, htmlEnd + 7).trim();
+                    }
+                    // If no closing tag, take everything from the start
+                    return content.substring(htmlStart).trim();
+                }
+                
+                // If no HTML tags found, return the original content
+                return content.trim();
             }
 
+            responseContent = extractHTMLContent(responseContent);
             res.send(responseContent);
         } catch (error) {
             console.error('Error:', error);
