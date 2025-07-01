@@ -80,17 +80,13 @@ app.use(async (req, res) => {
             const route = req.path;
             const customPrompt = req.session.prompt;
 
-            console.log('Using model:', model);
-
             // Validate that the model exists in our list
             const availableModels = JSON.parse(fs.readFileSync('./templates/models.json', 'utf8'));
             const modelExists = availableModels.some(m => m.id === model);
             if (!modelExists) {
-                console.log('Model not found, using fallback:', model);
                 // Use a fallback free model
                 const fallbackModel = availableModels.find(m => m.id.includes(':free'))?.id || 'openrouter/cypher-alpha:free';
                 req.session.model = fallbackModel;
-                console.log('Using fallback model:', fallbackModel);
             }
 
             const customRoutes = ['/favicon.ico', '/reset', '/start', '/the-page-where-it-starts'];
@@ -106,8 +102,6 @@ app.use(async (req, res) => {
             const url = website + route;
             const content = customPrompt ? customPrompt.replace(/{url}/g, url) : "Give me the content for a fictional HTML page. Reply with ONLY the HTML content in plain text, do not put it in a code block or include commentary. The fictional page you should generate is on " + url + '. Include styling and navigation through <a> tags with a relative link, like <a href="/home">. Include a lot of <a> tags. Be creative and make it look like a real page, dont be afraid to return a lot of code. Feel free to use images, but use public cdns as the image URLs. Be realistic with the links, examples: a blog post: /blog/{post-title}. A user profile: /user/{id or username}. A settings page: /settings/{sub-settings}, etc.';
 
-            console.log('Making API request to OpenRouter with model:', model);
-            
             const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
                 model: model,
                 messages: [
@@ -152,6 +146,4 @@ app.use(async (req, res) => {
         }
     });
 
-    app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
-    });
+    app.listen(port);
