@@ -261,7 +261,7 @@
             models.forEach(model => {
                 const option = document.createElement('option');
                 option.value = model.id;
-                option.textContent = model.id;
+                option.textContent = model.id.replace(':free', '');
                 document.getElementById('model-select').appendChild(option);
             });
 
