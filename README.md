@@ -64,7 +64,7 @@ Visit `/reset` to fetch and update the available models from OpenRouter.
 Visit `/the-page-where-it-starts` to configure and start generating content.
 Visiting any other URL without having configured a website redirects you here.
 
-## API Endpoints
+## Endpoints
 
 - `GET /the-page-where-it-starts` - Main configuration page
 - `GET /reset` - Update available models
