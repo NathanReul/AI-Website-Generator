@@ -127,6 +127,30 @@
             font-size: 0.8em;
             margin-top: 10px;
         }
+        
+        .cancel-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+        
+        .cancel-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .cancel-button:active {
+            transform: translateY(0);
+        }
     </style>
     <script src="/socket.io/socket.io.js"></script>
 </head>
@@ -148,6 +172,8 @@
             <div><strong>URL:</strong> https://www.{website}{route}</div>
             <div class="model-info">Using: {model}</div>
         </div>
+        
+        <a href="/the-page-where-it-starts" class="cancel-button">Cancel</a>
     </div>
 
     <script>
