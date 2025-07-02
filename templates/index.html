@@ -274,47 +274,65 @@
                 document.getElementById('model-select').appendChild(option);
             });
 
-            // Domain validation function
-            function validateDomain(domain) {
+            // Website input validation function (handles domain + optional path)
+            function validateWebsiteInput(input) {
                 const errors = [];
                 
+                if (!input.trim()) {
+                    errors.push('Please enter a website');
+                    return errors;
+                }
+                
                 // Check for protocol
-                if (domain.includes('://')) {
+                if (input.includes('://')) {
                     errors.push('Remove the protocol (http:// or https://)');
                 }
                 
                 // Check for www prefix
-                if (domain.toLowerCase().startsWith('www.')) {
+                if (input.toLowerCase().startsWith('www.')) {
                     errors.push('Remove the "www." prefix');
                 }
                 
-                // Check for paths
-                if (domain.includes('/')) {
-                    errors.push('Remove any paths - domain only');
-                }
-                
                 // Check for query parameters
-                if (domain.includes('?') || domain.includes('#')) {
+                if (input.includes('?') || input.includes('#')) {
                     errors.push('Remove query parameters and fragments');
                 }
                 
-                // Basic domain format check (after cleaning)
-                const cleanDomain = domain.toLowerCase().replace(/^www\./, '').split('/')[0];
+                // Split into domain and path
+                const parts = input.split('/');
+                const domain = parts[0].toLowerCase().replace(/^www\./, '');
+                const path = parts.length > 1 ? '/' + parts.slice(1).join('/') : '';
+                
+                // Validate domain
+                if (!domain) {
+                    errors.push('Please enter a domain');
+                    return errors;
+                }
                 
                 // Check for TLD presence
-                if (cleanDomain && !cleanDomain.includes('.')) {
+                if (!domain.includes('.')) {
                     errors.push('Domain must include a TLD (e.g., .com, .org, .net)');
                 }
                 
                 // More strict domain regex that requires at least one TLD
                 const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
                 
-                if (cleanDomain && cleanDomain.includes('.') && !domainRegex.test(cleanDomain)) {
+                if (domain.includes('.') && !domainRegex.test(domain)) {
                     errors.push('Enter a valid domain format (e.g., example.com)');
                 }
                 
-                if (!cleanDomain) {
-                    errors.push('Please enter a domain');
+                // Validate path if present
+                if (path) {
+                    // Check for invalid characters in path
+                    const invalidChars = /[<>:"|?*]/;
+                    if (invalidChars.test(path)) {
+                        errors.push('Path contains invalid characters');
+                    }
+                    
+                    // Check for multiple consecutive slashes
+                    if (path.includes('//')) {
+                        errors.push('Path cannot contain consecutive slashes');
+                    }
                 }
                 
                 return errors;
@@ -341,9 +359,9 @@
 
             // Real-time validation on input
             document.getElementById('website-input').addEventListener('input', (e) => {
-                const domain = e.target.value.trim();
-                if (domain) {
-                    const errors = validateDomain(domain);
+                const input = e.target.value.trim();
+                if (input) {
+                    const errors = validateWebsiteInput(input);
                     if (errors.length > 0) {
                         showValidationError(errors[0]);
                     } else {
@@ -388,16 +406,21 @@
 
             // Browse button
             document.getElementById('browse-button').addEventListener('click', () => {
-                const website = document.getElementById('website-input').value.trim();
+                const input = document.getElementById('website-input').value.trim();
                 const model = document.getElementById('model-select').value;
                 const selectedPrompt = document.querySelector('input[name="prompt-type"]:checked').value;
                 
-                // Validate domain before proceeding
-                const errors = validateDomain(website);
+                // Validate input before proceeding
+                const errors = validateWebsiteInput(input);
                 if (errors.length > 0) {
                     showValidationError(errors[0]);
                     return;
                 }
+                
+                // Parse domain and path from input
+                const parts = input.split('/');
+                const website = parts[0].toLowerCase().replace(/^www\./, '');
+                const path = parts.length > 1 ? '/' + parts.slice(1).join('/') : '';
                 
                 // Validate model selection
                 if (!model || model === 'default') {
@@ -424,6 +447,11 @@
                     model: model,
                     prompt: prompt
                 });
+                
+                // Add path parameter if provided
+                if (path) {
+                    params.append('path', path);
+                }
                 
                 window.location.href = `/start?${params.toString()}`;
             });
@@ -471,8 +499,9 @@
             
             <div class="form-group">
                 <label for="website-input">What website would you like to browse?</label>
-                <input type="text" id="website-input" placeholder="example.com">
+                <input type="text" id="website-input" placeholder="example.com or example.com/about">
                 <div id="website-error" class="error-message"></div>
+                <small style="color: #666; font-size: 0.9em;">Enter just the domain (e.g., example.com) or include a path (e.g., example.com/about)</small>
             </div>
 
             <div class="form-group">

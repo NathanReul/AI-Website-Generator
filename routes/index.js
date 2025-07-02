@@ -116,12 +116,13 @@ router.get('/reset', async (req, res) => {
 });
 
 /**
- * Start a new session with website, model, and prompt parameters
+ * Start a new session with website, model, prompt, and optional path parameters
  */
 router.get('/start', (req, res) => {
     req.session.website = req.query.website;
     req.session.model = req.query.model;
     req.session.prompt = req.query.prompt;
+    req.session.startingPath = req.query.path || '';
     
     // Generate a unique session ID for Socket.IO communication
     const sessionId = crypto.randomUUID();
@@ -131,10 +132,13 @@ router.get('/start', (req, res) => {
     global.activeSessions[sessionId] = {
         website: req.query.website,
         model: req.query.model,
-        prompt: req.query.prompt
+        prompt: req.query.prompt,
+        startingPath: req.query.path || ''
     };
 
-    res.redirect('/');
+    // Redirect to the starting path if provided, otherwise to root
+    const redirectPath = req.query.path || '/';
+    res.redirect(redirectPath);
 });
 
 /**
@@ -147,6 +151,13 @@ router.use(async (req, res) => {
         }
 
         const route = req.path;
+        
+        // If this is the first visit and a starting path was specified,
+        // ensure we're on the correct path
+        if (req.session.startingPath && req.session.startingPath !== route && !req.session.pathVisited) {
+            req.session.pathVisited = true;
+            return res.redirect(req.session.startingPath);
+        }
 
         // Skip custom routes
         if (config.customRoutes.includes(route) || 
