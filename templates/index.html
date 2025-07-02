@@ -253,6 +253,15 @@
             font-size: 0.85em;
             line-height: 1.4;
         }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 8px;
+            display: none;
+        }
+        .input-error {
+            border-color: #dc3545 !important;
+        }
     </style>
     <button id="reset-models" class="reset-button" title="Update available models">🔄 Update Models</button>
     <script>
@@ -263,6 +272,86 @@
                 option.value = model.id;
                 option.textContent = model.name;
                 document.getElementById('model-select').appendChild(option);
+            });
+
+            // Domain validation function
+            function validateDomain(domain) {
+                const errors = [];
+                
+                // Check for protocol
+                if (domain.includes('://')) {
+                    errors.push('Remove the protocol (http:// or https://)');
+                }
+                
+                // Check for www prefix
+                if (domain.toLowerCase().startsWith('www.')) {
+                    errors.push('Remove the "www." prefix');
+                }
+                
+                // Check for paths
+                if (domain.includes('/')) {
+                    errors.push('Remove any paths - domain only');
+                }
+                
+                // Check for query parameters
+                if (domain.includes('?') || domain.includes('#')) {
+                    errors.push('Remove query parameters and fragments');
+                }
+                
+                // Basic domain format check (after cleaning)
+                const cleanDomain = domain.toLowerCase().replace(/^www\./, '').split('/')[0];
+                
+                // Check for TLD presence
+                if (cleanDomain && !cleanDomain.includes('.')) {
+                    errors.push('Domain must include a TLD (e.g., .com, .org, .net)');
+                }
+                
+                // More strict domain regex that requires at least one TLD
+                const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+                
+                if (cleanDomain && cleanDomain.includes('.') && !domainRegex.test(cleanDomain)) {
+                    errors.push('Enter a valid domain format (e.g., example.com)');
+                }
+                
+                if (!cleanDomain) {
+                    errors.push('Please enter a domain');
+                }
+                
+                return errors;
+            }
+
+            // Show validation errors
+            function showValidationError(message) {
+                const errorElement = document.getElementById('website-error');
+                const inputElement = document.getElementById('website-input');
+                
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                inputElement.classList.add('input-error');
+            }
+
+            // Clear validation errors
+            function clearValidationError() {
+                const errorElement = document.getElementById('website-error');
+                const inputElement = document.getElementById('website-input');
+                
+                errorElement.style.display = 'none';
+                inputElement.classList.remove('input-error');
+            }
+
+            // Real-time validation on input
+            document.getElementById('website-input').addEventListener('input', (e) => {
+                const domain = e.target.value.trim();
+                if (domain) {
+                    const errors = validateDomain(domain);
+                    if (errors.length > 0) {
+                        showValidationError(errors[0]);
+                    } else {
+                        clearValidationError();
+                    }
+                } else {
+                    clearValidationError();
+                }
             });
 
             // Advanced settings toggle
@@ -299,9 +388,25 @@
 
             // Browse button
             document.getElementById('browse-button').addEventListener('click', () => {
-                const website = document.getElementById('website-input').value;
+                const website = document.getElementById('website-input').value.trim();
                 const model = document.getElementById('model-select').value;
                 const selectedPrompt = document.querySelector('input[name="prompt-type"]:checked').value;
+                
+                // Validate domain before proceeding
+                const errors = validateDomain(website);
+                if (errors.length > 0) {
+                    showValidationError(errors[0]);
+                    return;
+                }
+                
+                // Validate model selection
+                if (!model || model === 'default') {
+                    alert('Please select an AI model');
+                    return;
+                }
+                
+                clearValidationError();
+                
                 let prompt = '';
 
                 if (selectedPrompt === 'detailed') {
@@ -366,7 +471,8 @@
             
             <div class="form-group">
                 <label for="website-input">What website would you like to browse?</label>
-                <input type="text" id="website-input" placeholder="example.com" placeholder="portfolio.com">
+                <input type="text" id="website-input" placeholder="example.com">
+                <div id="website-error" class="error-message"></div>
             </div>
 
             <div class="form-group">
