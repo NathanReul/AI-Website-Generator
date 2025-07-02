@@ -2188,8 +2188,8 @@
     }
   },
   {
-    "id": "inception/mercury-coder-small-beta",
-    "name": "Inception: Mercury Coder Small Beta",
+    "id": "inception/mercury-coder",
+    "name": "Inception: Mercury Coder",
     "description": "Mercury Coder Small is the first diffusion large language model (dLLM). Applying a breakthrough discrete diffusion approach, the model runs 5-10x faster than even speed optimized models like Claude 3.5 Haiku and GPT-4o Mini while matching their performance. Mercury Coder Small's speed means that developers can stay in the flow while coding, enjoying rapid chat-based iteration and responsive code completion suggestions. On Copilot Arena, Mercury Coder ranks 1st in speed and ties for 2nd in quality. Read more in the [blog post here](https://www.inceptionlabs.ai/introducing-mercury).",
     "context_length": 32000,
     "pricing": {
