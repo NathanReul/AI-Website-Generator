@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generating Content...</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .loading-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            margin: 20px;
+        }
+        
+        .spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .pulsing-dots {
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .pulsing-dots span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: white;
+            margin: 0 2px;
+            animation: pulse 1.4s ease-in-out infinite both;
+        }
+        
+        .pulsing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .pulsing-dots span:nth-child(2) { animation-delay: -0.16s; }
+        .pulsing-dots span:nth-child(3) { animation-delay: 0s; }
+        
+        @keyframes pulse {
+            0%, 80%, 100% { 
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            40% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+        
+        .loading-text {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+        
+        .progress-container {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            height: 8px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffffff 0%, rgba(255,255,255,0.8) 100%);
+            border-radius: 25px;
+            width: 0%;
+            animation: progressAnimation 3s ease-in-out infinite;
+        }
+        
+        @keyframes progressAnimation {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 0%; }
+        }
+        
+        .status-text {
+            font-size: 1em;
+            opacity: 0.8;
+            margin-top: 20px;
+        }
+        
+        .website-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 30px;
+            font-size: 0.9em;
+        }
+        
+        .model-info {
+            opacity: 0.7;
+            font-size: 0.8em;
+            margin-top: 10px;
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="spinner"></div>
+        <h1>Creating Your Page</h1>
+        <div class="loading-text">
+            AI is crafting your content<span class="pulsing-dots"><span></span><span></span><span></span></span>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+        
+        <div class="status-text" id="status">Initializing AI model...</div>
+        
+        <div class="website-info">
+            <div><strong>Website:</strong> {website}</div>
+            <div><strong>Route:</strong> {route}</div>
+            <div class="model-info">Using: {model}</div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        const statusElement = document.getElementById('status');
+        
+        // Request content generation for this specific route
+        const sessionId = '{sessionId}';
+        const route = '{route}';
+        
+        socket.emit('generate-content', { sessionId, route });
+        
+        // Listen for status updates
+        socket.on('generation-status', (data) => {
+            if (data.sessionId === sessionId) {
+                statusElement.textContent = data.status;
+            }
+        });
+        
+        // Listen for completed content
+        socket.on('content-ready', (data) => {
+            if (data.sessionId === sessionId) {
+                // Replace the entire page with the generated content
+                document.open();
+                document.write(data.content);
+                document.close();
+            }
+        });
+        
+        // Listen for errors
+        socket.on('generation-error', (data) => {
+            if (data.sessionId === sessionId) {
+                statusElement.textContent = 'Error: ' + data.error;
+                setTimeout(() => {
+                    window.location.href = '/the-page-where-it-starts';
+                }, 3000);
+            }
+        });
+        
+        // Fallback timeout (in case something goes wrong)
+        setTimeout(() => {
+            if (document.querySelector('.loading-container')) {
+                statusElement.textContent = 'Taking longer than expected...';
+                setTimeout(() => {
+                    window.location.href = '/the-page-where-it-starts';
+                }, 5000);
+            }
+        }, 30000);
+    </script>
+</body>
+</html> 
