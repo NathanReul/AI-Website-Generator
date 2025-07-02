@@ -11,26 +11,6 @@ Requires an OpenRouter API key. Some models can be used free of charge.
 - Custom prompt templates
 - Automatic model validation and fallback
 
-## Project Structure
-
-```
-AI-Website/
-├── app.js                 # Main application entry point
-├── config/
-│   └── config.js         # Configuration settings
-├── services/
-│   ├── modelsService.js  # Model management service
-│   └── openRouterService.js # OpenRouter API service
-├── routes/
-│   └── index.js          # Route handlers
-├── middleware/
-│   └── errorHandler.js   # Error handling middleware
-├── templates/
-│   ├── index.html        # Main template
-│   └── models.json       # Available models cache
-└── package.json
-```
-
 ## Requirements
 
 - **Node.js**: Version 14.0 or higher
@@ -53,6 +33,26 @@ AI-Website/
    SESSION_SECRET=your_session_secret
    PORT=3000
    ```
+
+## Project Structure
+
+```
+AI-Website/
+├── app.js                 # Main application entry point
+├── config/
+│   └── config.js         # Configuration settings
+├── services/
+│   ├── modelsService.js  # Model management service
+│   └── openRouterService.js # OpenRouter API service
+├── routes/
+│   └── index.js          # Route handlers
+├── middleware/
+│   └── errorHandler.js   # Error handling middleware
+├── templates/
+│   ├── index.html        # Main template
+│   └── models.json       # Available models cache
+└── package.json
+```
 
 ## Usage
 
