@@ -48,6 +48,7 @@ function setupSocketHandlers(io) {
                     status: 'Generating content...'
                 });
                 
+                // Construct the full URL by combining domain and route
                 const url = website + route;
                 const finalPrompt = openRouterService.generateWebsitePrompt(url, prompt);
                 
@@ -119,10 +120,16 @@ router.get('/reset', async (req, res) => {
  * Start a new session with website, model, prompt, and optional path parameters
  */
 router.get('/start', (req, res) => {
-    req.session.website = req.query.website;
+    // Parse the website input to separate domain and path
+    const websiteInput = req.query.website;
+    const parts = websiteInput.split('/');
+    const domain = parts[0].toLowerCase().replace(/^www\./, '');
+    const path = parts.length > 1 ? '/' + parts.slice(1).join('/') : '';
+    
+    req.session.website = domain; // Store only the domain
     req.session.model = req.query.model;
     req.session.prompt = req.query.prompt;
-    req.session.startingPath = req.query.path || '';
+    req.session.startingPath = path || req.query.path || ''; // Use parsed path or query path
     
     // Generate a unique session ID for Socket.IO communication
     const sessionId = crypto.randomUUID();
@@ -130,14 +137,14 @@ router.get('/start', (req, res) => {
     
     // Store session data in global store for Socket.IO access
     global.activeSessions[sessionId] = {
-        website: req.query.website,
+        website: domain, // Store only the domain
         model: req.query.model,
         prompt: req.query.prompt,
-        startingPath: req.query.path || ''
+        startingPath: path || req.query.path || ''
     };
 
     // Redirect to the starting path if provided, otherwise to root
-    const redirectPath = req.query.path || '/';
+    const redirectPath = path || req.query.path || '/';
     res.redirect(redirectPath);
 });
 
@@ -182,9 +189,9 @@ router.use(async (req, res) => {
             }
 
             // Replace placeholders with actual values
-            data = data.replace('{website}', req.session.website);
-            data = data.replace('{route}', route);
-            data = data.replace('{model}', req.session.model);
+            data = data.replace(/{website}/g, req.session.website);
+            data = data.replace(/{route}/g, route);
+            data = data.replace(/{model}/g, req.session.model);
             data = data.replace(/{sessionId}/g, req.session.socketSessionId);
             
             res.send(data);
