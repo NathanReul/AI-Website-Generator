@@ -31,6 +31,15 @@ AI-Website/
 └── package.json
 ```
 
+## Requirements
+
+- **Node.js**: Version 14.0 or higher
+- **npm**: Included with Node.js installation
+- **OpenRouter API Account**: Required for AI model access
+  - Sign up at [OpenRouter](https://openrouter.ai/)
+  - Obtain an API token
+  - You can use the free models without a credit card
+
 ## Installation
 
 1. Clone the repository
