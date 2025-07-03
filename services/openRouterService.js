@@ -17,6 +17,7 @@ class OpenRouterService {
      */
     async generateContent(model, prompt) {
         try {
+            //Hello!
             const response = await this.client.post('/chat/completions', {
                 model: model,
                 messages: [
